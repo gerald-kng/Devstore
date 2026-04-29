@@ -45,6 +45,15 @@ export async function middleware(request: NextRequest) {
   }
 
   if (pathname.startsWith("/admin")) {
+    // Server actions (POST with a Next-Action header) run in Node runtime and
+    // perform their own admin check via getServiceRoleIfAdmin(). Don't redirect
+    // them here — middleware runs in the Edge sandbox where supabase.auth.getUser()
+    // can intermittently fail with "fetch failed", which would otherwise turn the
+    // action POST into a 302 to /admin/login and surface React's
+    // "An unexpected response was received from the server." error.
+    if (request.headers.has("next-action")) {
+      return supabaseResponse;
+    }
     if (pathname === "/admin/login" || pathname === "/admin/forbidden") {
       if (user && isAdminEmail(user.email) && pathname === "/admin/login") {
         return NextResponse.redirect(new URL("/admin", request.url));

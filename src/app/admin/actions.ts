@@ -7,6 +7,7 @@ import { sendAccessLinkEmail } from "@/lib/email";
 import { getServiceRoleIfAdmin } from "@/lib/auth/get-admin";
 import { createClient } from "@/lib/supabase/server";
 import { getProductById } from "@/lib/products";
+import { SOCIAL_PROFILES } from "@/lib/social";
 import type { Database } from "@/types/database";
 
 function toUrlSlug(value: string): string {
@@ -32,6 +33,7 @@ function revalidateAll() {
   revalidatePath("/admin/orders");
   revalidatePath("/admin/engagement");
   revalidatePath("/admin/site-pages");
+  revalidatePath("/admin/social-links");
   revalidatePath("/c", "layout");
 }
 
@@ -591,6 +593,38 @@ export async function replyProductReviewAction(formData: FormData) {
   }
   revalidatePath("/admin/engagement");
   await revalidateProductStorefront(row.product_id);
+}
+
+const SOCIAL_KEY_SET = new Set(SOCIAL_PROFILES.map((p) => p.key));
+
+export async function saveSocialLinksAction(formData: FormData) {
+  const ctx = await getServiceRoleIfAdmin();
+  if (!ctx) {
+    throw new Error("Unauthorized");
+  }
+  const rows = SOCIAL_PROFILES.map((profile, idx) => {
+    const href = String(formData.get(`href__${profile.key}`) ?? "").trim();
+    const isActive = formData.get(`active__${profile.key}`) === "on";
+    const sortRaw = String(formData.get(`sort__${profile.key}`) ?? "").trim();
+    const sortParsed = sortRaw.length > 0 ? Number(sortRaw) : idx;
+    const sort_order = Number.isFinite(sortParsed) ? sortParsed : idx;
+    return {
+      key: profile.key,
+      href,
+      is_active: isActive,
+      sort_order,
+      updated_at: new Date().toISOString(),
+    };
+  }).filter((row) => SOCIAL_KEY_SET.has(row.key));
+
+  const { error } = await ctx.db
+    .from("site_social_links")
+    .upsert(rows, { onConflict: "key" });
+  if (error) {
+    throw new Error(error.message);
+  }
+  revalidatePath("/admin/social-links");
+  revalidatePath("/", "layout");
 }
 
 export async function deleteProductReviewAction(formData: FormData) {

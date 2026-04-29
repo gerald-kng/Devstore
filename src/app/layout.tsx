@@ -1,6 +1,9 @@
-import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@/components/analytics";
+import { JsonLd } from "@/components/json-ld";
+import { RevealObserver } from "@/components/reveal-observer";
+import { buildRootMetadata, organizationLd, websiteLd } from "@/lib/seo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,11 +15,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Orion Dev Store — Crypto downloads",
-  description:
-    "Browse digital products with per-SKU pricing, demos, and crypto checkout.",
-};
+export const metadata = buildRootMetadata();
 
 export default function RootLayout({
   children,
@@ -45,7 +44,11 @@ export default function RootLayout({
             `,
           }}
         />
+        <JsonLd id="ld-organization" data={organizationLd()} />
+        <JsonLd id="ld-website" data={websiteLd()} />
         {children}
+        <RevealObserver />
+        <Analytics />
       </body>
     </html>
   );

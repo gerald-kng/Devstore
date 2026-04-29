@@ -97,6 +97,30 @@ export type Database = {
         };
         Relationships: [];
       };
+      site_social_links: {
+        Row: {
+          key: string;
+          href: string;
+          is_active: boolean;
+          sort_order: number;
+          updated_at: string;
+        };
+        Insert: {
+          key: string;
+          href?: string;
+          is_active?: boolean;
+          sort_order?: number;
+          updated_at?: string;
+        };
+        Update: {
+          key?: string;
+          href?: string;
+          is_active?: boolean;
+          sort_order?: number;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       newsletter_subscribers: {
         Row: {
           id: string;

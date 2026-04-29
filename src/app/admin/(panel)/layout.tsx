@@ -7,6 +7,7 @@ import {
   LogOut,
   MessageSquare,
   Package,
+  Share2,
 } from "lucide-react";
 import { signOutAction } from "@/app/admin/actions";
 import { createClient } from "@/lib/supabase/server";
@@ -18,6 +19,7 @@ const nav = [
   { href: "/admin/orders", label: "Orders", icon: ListOrdered },
   { href: "/admin/engagement", label: "Engagement", icon: MessageSquare },
   { href: "/admin/site-pages", label: "Site pages", icon: FileText },
+  { href: "/admin/social-links", label: "Social links", icon: Share2 },
 ] as const;
 
 export default async function AdminPanelLayout({
