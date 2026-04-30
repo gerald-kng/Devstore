@@ -12,12 +12,23 @@ function nextWithHeaders(request: NextRequest) {
 }
 
 export async function middleware(request: NextRequest) {
+  const { pathname, searchParams } = request.nextUrl;
+  if (pathname === "/" && searchParams.has("error_code")) {
+    const url = new URL("/admin/login", request.url);
+    url.searchParams.set("error", "callback");
+    const code = searchParams.get("error_code");
+    if (code) url.searchParams.set("reason", code);
+    const desc = searchParams.get("error_description");
+    if (desc) url.searchParams.set("details", desc);
+    return NextResponse.redirect(url);
+  }
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!supabaseUrl || !supabaseKey) {
     return nextWithHeaders(request);
   }
-  let supabaseResponse = nextWithHeaders(request);
+  const supabaseResponse = nextWithHeaders(request);
   const supabase = createServerClient<Database>(
     supabaseUrl,
     supabaseKey,
@@ -37,8 +48,6 @@ export async function middleware(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  const { pathname } = request.nextUrl;
 
   if (pathname === "/auth/callback") {
     return supabaseResponse;
