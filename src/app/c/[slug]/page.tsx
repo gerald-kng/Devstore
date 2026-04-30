@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, BookOpen } from "lucide-react";
 import { CtaBanner } from "@/components/cta-banner";
 import { PageBackdrop } from "@/components/page-backdrop";
@@ -13,6 +13,12 @@ type P = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: P): Promise<Metadata> {
   const { slug } = await params;
+  if (slug === "about") {
+    return buildMetadata({
+      title: "About",
+      path: "/about",
+    });
+  }
   if (!isSupabaseConfigured()) {
     return buildMetadata({ title: "Page", path: `/c/${slug}`, noindex: true });
   }
@@ -35,6 +41,10 @@ export async function generateMetadata({ params }: P): Promise<Metadata> {
 
 export default async function CmsPage({ params }: P) {
   const { slug } = await params;
+  // /c/about is the historical CMS slug; the dedicated /about route is now canonical.
+  if (slug === "about") {
+    redirect("/about");
+  }
   if (!isSupabaseConfigured()) {
     notFound();
   }

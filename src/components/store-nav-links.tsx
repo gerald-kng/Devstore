@@ -18,7 +18,7 @@ function baseClass(active: boolean): string {
 export function StoreNavLinks({ headerItems }: { headerItems: HeaderItem[] }) {
   const pathname = usePathname();
   const isProducts =
-    pathname === "/products" || pathname?.startsWith("/products/") || pathname === "/courses";
+    pathname === "/products" || pathname?.startsWith("/products/");
 
   return (
     <>
@@ -30,6 +30,12 @@ export function StoreNavLinks({ headerItems }: { headerItems: HeaderItem[] }) {
       </Link>
       <Link href="/courses" className={baseClass(pathname === "/courses")}>
         Courses
+      </Link>
+      <Link href="/hire" className={baseClass(pathname === "/hire")}>
+        Hire
+      </Link>
+      <Link href="/about" className={baseClass(pathname === "/about")}>
+        About
       </Link>
       {headerItems.map((p) => {
         const href = `/c/${p.slug}`;

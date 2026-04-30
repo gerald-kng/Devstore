@@ -109,6 +109,18 @@ export async function StoreChrome({
                     Courses
                   </Link>
                   <Link
+                    href="/hire"
+                    className="link-underline text-zinc-400 hover:text-emerald-300"
+                  >
+                    Hire a developer
+                  </Link>
+                  <Link
+                    href="/about"
+                    className="link-underline text-zinc-400 hover:text-emerald-300"
+                  >
+                    About
+                  </Link>
+                  <Link
                     href="/contact"
                     className="link-underline text-zinc-400 hover:text-emerald-300"
                   >

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {
   Boxes,
+  Briefcase,
   FileText,
   LayoutDashboard,
   ListOrdered,
@@ -18,6 +19,7 @@ const nav = [
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/orders", label: "Orders", icon: ListOrdered },
   { href: "/admin/engagement", label: "Engagement", icon: MessageSquare },
+  { href: "/admin/hire", label: "Hire requests", icon: Briefcase },
   { href: "/admin/site-pages", label: "Site pages", icon: FileText },
   { href: "/admin/social-links", label: "Social links", icon: Share2 },
 ] as const;

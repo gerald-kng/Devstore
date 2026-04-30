@@ -121,6 +121,66 @@ export type Database = {
         };
         Relationships: [];
       };
+      hire_requests: {
+        Row: {
+          id: string;
+          name: string;
+          email: string;
+          company: string;
+          project_type: string;
+          description: string;
+          goals: string;
+          tech_stack: string;
+          budget_range: string;
+          timeline: string;
+          start_date: string;
+          reference_links: string;
+          nda_required: boolean;
+          contact_method: string;
+          is_handled: boolean;
+          admin_notes: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name?: string;
+          email: string;
+          company?: string;
+          project_type?: string;
+          description: string;
+          goals?: string;
+          tech_stack?: string;
+          budget_range?: string;
+          timeline?: string;
+          start_date?: string;
+          reference_links?: string;
+          nda_required?: boolean;
+          contact_method?: string;
+          is_handled?: boolean;
+          admin_notes?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          email?: string;
+          company?: string;
+          project_type?: string;
+          description?: string;
+          goals?: string;
+          tech_stack?: string;
+          budget_range?: string;
+          timeline?: string;
+          start_date?: string;
+          reference_links?: string;
+          nda_required?: boolean;
+          contact_method?: string;
+          is_handled?: boolean;
+          admin_notes?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       newsletter_subscribers: {
         Row: {
           id: string;

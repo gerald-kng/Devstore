@@ -90,8 +90,8 @@ export default async function HomePage() {
     },
     {
       icon: CheckCircle2,
-      title: "Admin control",
-      body: "Manage products, categories, and content from one dashboard.",
+      title: "Secure downloads",
+      body: "Email-gated, signed access links — only the buyer can fetch the files.",
     },
   ];
 

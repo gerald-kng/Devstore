@@ -9,6 +9,10 @@ export type StaticPageNav = {
   sort_order: number;
 };
 
+// Slugs that have dedicated top-level routes; we never want them duplicated
+// from the CMS-managed nav lists.
+const RESERVED_NAV_SLUGS = new Set(["about"]);
+
 export async function getHeaderNavLinks(): Promise<StaticPageNav[]> {
   if (!isSupabaseConfigured()) {
     return [];
@@ -23,7 +27,9 @@ export async function getHeaderNavLinks(): Promise<StaticPageNav[]> {
   if (error) {
     return [];
   }
-  return (data ?? []) as StaticPageNav[];
+  return ((data ?? []) as StaticPageNav[]).filter(
+    (p) => !RESERVED_NAV_SLUGS.has(p.slug),
+  );
 }
 
 export async function getFooterNavLinks(): Promise<StaticPageNav[]> {
@@ -40,7 +46,9 @@ export async function getFooterNavLinks(): Promise<StaticPageNav[]> {
   if (error) {
     return [];
   }
-  return (data ?? []) as StaticPageNav[];
+  return ((data ?? []) as StaticPageNav[]).filter(
+    (p) => !RESERVED_NAV_SLUGS.has(p.slug),
+  );
 }
 
 export async function getCmsPageBySlug(

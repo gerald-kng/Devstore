@@ -34,6 +34,7 @@ function revalidateAll() {
   revalidatePath("/admin/engagement");
   revalidatePath("/admin/site-pages");
   revalidatePath("/admin/social-links");
+  revalidatePath("/admin/hire");
   revalidatePath("/c", "layout");
 }
 
@@ -593,6 +594,43 @@ export async function replyProductReviewAction(formData: FormData) {
   }
   revalidatePath("/admin/engagement");
   await revalidateProductStorefront(row.product_id);
+}
+
+export async function updateHireRequestAction(formData: FormData) {
+  const ctx = await getServiceRoleIfAdmin();
+  if (!ctx) {
+    throw new Error("Unauthorized");
+  }
+  const id = String(formData.get("id") ?? "").trim();
+  if (!id) {
+    throw new Error("Hire request id is required");
+  }
+  const adminNotes = String(formData.get("admin_notes") ?? "");
+  const isHandled = formData.get("is_handled") === "on";
+  const { error } = await ctx.db
+    .from("hire_requests")
+    .update({ admin_notes: adminNotes, is_handled: isHandled })
+    .eq("id", id);
+  if (error) {
+    throw new Error(error.message);
+  }
+  revalidatePath("/admin/hire");
+}
+
+export async function deleteHireRequestAction(formData: FormData) {
+  const ctx = await getServiceRoleIfAdmin();
+  if (!ctx) {
+    throw new Error("Unauthorized");
+  }
+  const id = String(formData.get("id") ?? "").trim();
+  if (!id) {
+    throw new Error("Hire request id is required");
+  }
+  const { error } = await ctx.db.from("hire_requests").delete().eq("id", id);
+  if (error) {
+    throw new Error(error.message);
+  }
+  revalidatePath("/admin/hire");
 }
 
 const SOCIAL_KEY_SET = new Set(SOCIAL_PROFILES.map((p) => p.key));
