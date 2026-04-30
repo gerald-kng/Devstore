@@ -23,6 +23,16 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Supabase falls back to Site URL (often "/") when redirect_to path is not in Redirect URLs;
+  // the session code then lands on the homepage and must be forwarded to the callback route.
+  if (pathname === "/" && searchParams.has("code")) {
+    const url = new URL("/auth/callback", request.url);
+    searchParams.forEach((value, key) => {
+      url.searchParams.set(key, value);
+    });
+    return NextResponse.redirect(url);
+  }
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!supabaseUrl || !supabaseKey) {
