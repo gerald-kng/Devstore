@@ -3,6 +3,7 @@
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { getClientAuthRedirectBaseUrl } from "@/lib/env";
 
 function AdminLoginForm() {
   const [email, setEmail] = useState("");
@@ -17,11 +18,11 @@ function AdminLoginForm() {
     setLoading(true);
     try {
       const supabase = createClient();
-      const origin = window.location.origin;
+      const base = getClientAuthRedirectBaseUrl();
       const { error } = await supabase.auth.signInWithOtp({
         email: email.trim(),
         options: {
-          emailRedirectTo: `${origin}/auth/callback?next=/admin`,
+          emailRedirectTo: `${base}/auth/callback?next=/admin`,
         },
       });
       if (error) {

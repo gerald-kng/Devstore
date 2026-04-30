@@ -22,6 +22,18 @@ export function getPublicAppUrl(): string {
   return process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 }
 
+/** Supabase magic-link redirects: prefer NEXT_PUBLIC_APP_URL so prod emails use the canonical domain (not localhost from dev or odd proxy hosts). Falls back to the current browser origin when unset (local dev). */
+export function getClientAuthRedirectBaseUrl(): string {
+  const configured = process.env.NEXT_PUBLIC_APP_URL?.trim();
+  if (configured) {
+    return configured.replace(/\/+$/, "");
+  }
+  if (typeof window !== "undefined") {
+    return window.location.origin;
+  }
+  return "http://localhost:3000";
+}
+
 export function isSupabaseConfigured(): boolean {
   return Boolean(
     process.env.NEXT_PUBLIC_SUPABASE_URL?.length &&
