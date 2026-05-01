@@ -54,6 +54,27 @@ export async function createR2UploadSignedUrl(args: {
   };
 }
 
+/** Server-side upload (avoids browser CORS on the R2 S3 endpoint). */
+export async function uploadR2Object(
+  key: string,
+  body: Uint8Array,
+  contentType: string,
+): Promise<void> {
+  if (!isR2Configured()) {
+    throw new Error("R2 is not configured");
+  }
+  const cfg = getR2Config();
+  const client = createR2Client();
+  await client.send(
+    new PutObjectCommand({
+      Bucket: cfg.bucket,
+      Key: key.replace(/^\/+/, ""),
+      Body: body,
+      ContentType: contentType || "application/octet-stream",
+    }),
+  );
+}
+
 export async function createR2DownloadSignedUrl(path: string): Promise<string> {
   if (!isR2Configured()) {
     throw new Error("R2 is not configured");

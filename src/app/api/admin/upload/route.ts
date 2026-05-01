@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServiceRoleIfAdmin } from "@/lib/auth/get-admin";
+import { isR2Configured } from "@/lib/env";
+import { uploadR2Object } from "@/lib/r2";
 
 const ALLOWED_BUCKETS = new Set(["product-images", "downloads"]);
 
@@ -37,10 +39,26 @@ export async function POST(request: Request) {
   const objectPath = `${prefix.replace(/^\/+/, "")}/${crypto.randomUUID()}.${ext}`;
 
   const arrayBuffer = await file.arrayBuffer();
+  const contentType = file.type || "application/octet-stream";
+
+  if (bucketRaw === "downloads" && isR2Configured()) {
+    try {
+      await uploadR2Object(objectPath, new Uint8Array(arrayBuffer), contentType);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "R2 upload failed";
+      return NextResponse.json({ error: message }, { status: 500 });
+    }
+    return NextResponse.json({
+      path: objectPath,
+      bucket: bucketRaw,
+      publicUrl: null,
+    });
+  }
+
   const { data, error } = await ctx.db.storage
     .from(bucketRaw)
     .upload(objectPath, arrayBuffer, {
-      contentType: file.type || "application/octet-stream",
+      contentType,
       upsert: true,
     });
   if (error) {

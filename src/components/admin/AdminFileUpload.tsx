@@ -32,6 +32,25 @@ export function AdminFileUpload({
     setError(null);
     setLoading(true);
     try {
+      // `downloads` goes through our API so large app zips/videos are uploaded
+      // server-side to R2/Supabase. Direct browser PUT to R2 fails without S3 CORS ("Load failed").
+      if (bucket === "downloads") {
+        const formData = new FormData();
+        formData.append("file", f);
+        formData.append("bucket", bucket);
+        formData.append("prefix", prefix);
+        const uploadRes = await fetch("/api/admin/upload", {
+          method: "POST",
+          body: formData,
+        });
+        const uploadJson = (await uploadRes.json()) as { path?: string; error?: string };
+        if (!uploadRes.ok || !uploadJson.path) {
+          throw new Error(uploadJson.error ?? "Upload failed");
+        }
+        onPath(uploadJson.path);
+        return;
+      }
+
       const signRes = await fetch("/api/admin/upload-url", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -71,9 +90,7 @@ export function AdminFileUpload({
         );
       }
 
-      if (signJson.path) {
-        onPath(signJson.path);
-      }
+      onPath(signJson.path);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error");
     } finally {
